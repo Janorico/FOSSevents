@@ -27,6 +27,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fossevents/data/files.dart';
 import 'package:fossevents/data/types.dart';
 import 'package:fossevents/dialogs.dart';
+import 'package:fossevents/extensions.dart';
 import 'package:fossevents/main.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -65,10 +66,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    DateFormat dateFormat = DateFormat.yMd();
+    DateFormat df = DateFormat.yMd();
     return Scaffold(
       appBar: AppBar(
-        title: Text("${dateFormat.format(DateTime.now())} UTC+${DateTime.now().timeZoneOffset.inHours}:00, ${dateFormat.format(DateTime.timestamp())} UTC"),
+        title: Text("${df.format(DateTime.now())} UTC+${DateTime.now().timeZoneOffset.inHours}:00, ${df.format(DateTime.timestamp())} UTC"),
         actions: [
           IconButton(
             onPressed: () {
@@ -198,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                           for (Event ie in db.events) {
                             bool exists = false;
                             for (Event e in widget.db.events) {
-                              if (ie.typeId == e.typeId && ie.dateTime == e.dateTime && ie.note == e.note) {
+                              if (ie.typeId == e.typeId && ie.dateTimeRange == e.dateTimeRange && ie.note == e.note) {
                                 exists = true;
                               }
                             }
@@ -285,7 +286,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 icon: Icon(Icons.question_mark_rounded, size: 48.0),
                 title: Text("Delete Instance"),
                 content: Text(
-                  "Are you sure you want to delete the selected event instance (${DateFormat.yMd().format(ec.dateTime)}, ${DateFormat.Hm().format(ec.dateTime)})?\nTHIS ACTION IS NOT UNDOABLE!",
+                  "Are you sure you want to delete the selected event instance (${ec.dateTimeRange.toReadableString()})?\nTHIS ACTION IS NOT UNDOABLE!",
                 ),
                 onConfirm: () {
                   widget.db.events.remove(ec);
@@ -320,8 +321,6 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   }
 
   Widget eventClassTreeNodeBuilder(BuildContext context, TreeSliverNode<EventClassWrapper> node, AnimationStyle toggleAnimationStyle) {
-    DateFormat df = DateFormat.yMd();
-    DateFormat tf = DateFormat.Hm();
     final Duration animationDuration = toggleAnimationStyle.duration ?? TreeSliver.defaultAnimationDuration;
     final Curve animationCurve = toggleAnimationStyle.curve ?? TreeSliver.defaultAnimationCurve;
     final int index = TreeSliverController.of(context).getActiveIndexFor(node)!;
@@ -352,8 +351,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       if (ec is Event)
         Text(
           ec.typeId == null
-              ? "${ec.note} (${df.format(ec.dateTime)}, ${tf.format(ec.dateTime)})"
-              : "${df.format(ec.dateTime)}, ${tf.format(ec.dateTime)}${ec.note.isEmpty ? "" : " (${ec.note})"}",
+              ? "${ec.note} (${ec.dateTimeRange.toReadableString()})"
+              : "${ec.dateTimeRange.toReadableString()}${ec.note.isEmpty ? "" : " (${ec.note})"}",
         )
       else if (ec is EventType)
         Tooltip(message: ec.desc, child: Text(ec.name))

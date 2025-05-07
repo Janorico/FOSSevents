@@ -19,7 +19,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:fossevents/data/types.dart';
-import 'package:intl/intl.dart';
+import 'package:fossevents/widgets/date_time_picker.dart';
 
 class Dialogs {
   static void showNoSelectionDialog(BuildContext context) {
@@ -50,21 +50,19 @@ class AddEditEventConfirmationDialog extends StatefulWidget {
 
 class _AddEditEventConfirmationDialogState extends State<AddEditEventConfirmationDialog> {
   late String? typeId;
-  late DateTime dateTime;
+  late DateTimeRange dateTimeRange;
   final TextEditingController noteController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     typeId = widget.e?.typeId ?? widget.eventType;
-    dateTime = widget.e?.dateTime ?? DateTime.now();
+    dateTimeRange = widget.e?.dateTimeRange ?? DateTimeRange(start: DateTime.now(), end: DateTime.now());
     noteController.text = widget.e?.note ?? "";
   }
 
   @override
   Widget build(BuildContext context) {
-    DateFormat df = DateFormat.yMd();
-    DateFormat tf = DateFormat.Hm();
     return ConfirmationDialog(
       title: Text(widget.e == null ? "Add event..." : "Edit event..."),
       content: Column(
@@ -95,21 +93,16 @@ class _AddEditEventConfirmationDialogState extends State<AddEditEventConfirmatio
           Row(
             spacing: 8.0,
             children: [
-              Expanded(child: Text("Date:")),
+              Expanded(child: Text("From:")),
               Expanded(
                 flex: 2,
-                child: TextButton(
-                  onPressed: () {
-                    showDatePicker(context: context, initialDate: dateTime, firstDate: DateTime.utc(0), lastDate: DateTime.now()).then((value) {
-                      if (value == null) {
-                        return;
-                      }
-                      setState(() {
-                        dateTime = DateTime(value.year, value.month, value.day, dateTime.hour, dateTime.minute);
-                      });
+                child: DateTimePicker(
+                  dateTime: dateTimeRange.start,
+                  onDateChanged: (dt) {
+                    setState(() {
+                      dateTimeRange = DateTimeRange(start: dt, end: dateTimeRange.end.isAfter(dt) ? dateTimeRange.end : dt);
                     });
                   },
-                  child: Text(df.format(dateTime)),
                 ),
               ),
             ],
@@ -117,21 +110,16 @@ class _AddEditEventConfirmationDialogState extends State<AddEditEventConfirmatio
           Row(
             spacing: 8.0,
             children: [
-              Expanded(child: Text("Time:")),
+              Expanded(child: Text("To:")),
               Expanded(
                 flex: 2,
-                child: TextButton(
-                  onPressed: () {
-                    showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(dateTime)).then((value) {
-                      if (value == null) {
-                        return;
-                      }
-                      setState(() {
-                        dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day, value.hour, value.minute);
-                      });
+                child: DateTimePicker(
+                  dateTime: dateTimeRange.end,
+                  onDateChanged: (dt) {
+                    setState(() {
+                      dateTimeRange = DateTimeRange(start: dateTimeRange.start.isBefore(dt) ? dateTimeRange.start : dt, end: dt);
                     });
                   },
-                  child: Text(tf.format(dateTime)),
                 ),
               ),
             ],
@@ -154,7 +142,7 @@ class _AddEditEventConfirmationDialogState extends State<AddEditEventConfirmatio
       ),
       onConfirm: () {
         if (widget.onConfirmed != null) {
-          widget.onConfirmed!(Event(typeId: typeId, dateTime: dateTime.toUtc(), note: noteController.text));
+          widget.onConfirmed!(Event(typeId: typeId, dateTimeRange: dateTimeRange, note: noteController.text));
         }
       },
     );

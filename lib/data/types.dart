@@ -17,6 +17,8 @@
  *
  */
 
+import 'package:flutter/material.dart';
+
 class EventDatabase {
   List<Event> events = [];
   List<EventType> eventTypes = [];
@@ -69,23 +71,42 @@ interface class EventClass {}
 
 class Event extends EventClass {
   String? typeId;
-  DateTime dateTime;
+  late DateTimeRange dateTimeRange;
   String note;
 
-  Event({required this.typeId, required this.dateTime, required this.note});
+  Event({required this.typeId, required DateTimeRange dateTimeRange, required this.note}) {
+    this.dateTimeRange = DateTimeRange(start: dateTimeRange.start.toUtc(), end: dateTimeRange.end.toUtc());
+  }
 
   Map<String, String> toJson() {
-    return {"type_id": typeId ?? "null", "timestamp": dateTime.toUtc().toIso8601String(), "note": note};
+    return {
+      "type_id": typeId ?? "null",
+      "time_range_start": dateTimeRange.start.toUtc().toIso8601String(),
+      "time_range_end": dateTimeRange.end.toUtc().toIso8601String(),
+      "note": note,
+    };
   }
 
   static Event fromJson(Map json) {
     switch (json) {
-      case {'type_id': String? typeId, 'timestamp': String dateTime, 'note': String note}:
+      case {'type_id': String? typeId, 'timestamp': String timestamp, 'note': String note}:
         {
           if (typeId == "null") {
             typeId = null;
           }
-          return Event(typeId: typeId, dateTime: DateTime.parse(dateTime).toUtc(), note: note);
+          DateTime dt = DateTime.parse(timestamp);
+          return Event(typeId: typeId, dateTimeRange: DateTimeRange(start: dt, end: dt), note: note);
+        }
+      case {'type_id': String? typeId, 'time_range_start': String timeRangeStart, 'time_range_end': String timeRangeEnd, 'note': String note}:
+        {
+          if (typeId == "null") {
+            typeId = null;
+          }
+          return Event(
+            typeId: typeId,
+            dateTimeRange: DateTimeRange(start: DateTime.parse(timeRangeStart).toUtc(), end: DateTime.parse(timeRangeEnd).toUtc()),
+            note: note,
+          );
         }
       case _:
         throw FormatException("Failed to create event from JSON data.");
