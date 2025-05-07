@@ -25,12 +25,12 @@ class Files {
   }
 
   static Future saveDatabase(EventDatabase db) async {
-    databaseToFile(db, await dbPath);
+    return databaseToFile(db, await dbPath);
   }
 
   static Future databaseToFile(EventDatabase db, String path) async {
     File f = File(path);
     await f.parent.create(recursive: true);
-    await f.writeAsString(jsonEncode(db.toJson()));
+    await f.writeAsString(jsonEncode(db.toJson()), flush: true);
   }
 }

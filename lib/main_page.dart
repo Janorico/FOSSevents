@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fossevents/data/files.dart';
 import 'package:fossevents/data/types.dart';
@@ -20,10 +21,28 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   TreeSliverNode<EventClassWrapper>? selectedNode;
   final TreeSliverController treeController = TreeSliverController();
   late List<TreeSliverNode<EventClassWrapper>> tree = getEventTree(widget.db);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  Future<AppExitResponse> didRequestAppExit() async {
+    await Files.saveDatabase(widget.db);
+    return AppExitResponse.exit;
+  }
 
   @override
   Widget build(BuildContext context) {
