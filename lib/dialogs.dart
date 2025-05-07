@@ -288,10 +288,12 @@ class ConfirmationDialog extends StatelessWidget {
   final Widget? icon;
   final Widget? title;
   final Widget? content;
+  final bool popOnConfirm;
+  final bool popOnCancel;
   final Function? onConfirm;
   final Function? onCancel;
 
-  const ConfirmationDialog({super.key, this.icon, this.title, this.content, this.onConfirm, this.onCancel});
+  const ConfirmationDialog({super.key, this.icon, this.title, this.content, this.popOnConfirm = true, this.popOnCancel = true, this.onConfirm, this.onCancel});
 
   @override
   Widget build(BuildContext context) {
@@ -302,14 +304,18 @@ class ConfirmationDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            if (popOnConfirm) {
+              Navigator.of(context).pop();
+            }
             if (onConfirm != null) onConfirm!();
           },
           child: Text("OK"),
         ),
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            if (popOnCancel) {
+              Navigator.of(context).pop();
+            }
             if (onCancel != null) onCancel!();
           },
           child: Text("Cancel"),
