@@ -53,10 +53,19 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         actions: [
           IconButton(
             onPressed: () {
+              EventClass? ec = selectedNode?.content.ec;
+              String? selectedEventType;
+              if (ec is EventType) {
+                selectedEventType = ec.id;
+              }
+              if (ec is Event) {
+                selectedEventType = ec.typeId;
+              }
               showDialog(
                 context: context,
                 builder:
                     (context) => AddEditEventConfirmationDialog(
+                      eventType: selectedEventType,
                       eventTypes: widget.db.eventTypes,
                       onConfirmed: (e) {
                         widget.db.events.add(e);

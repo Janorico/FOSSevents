@@ -19,10 +19,11 @@ class Dialogs {
 
 class AddEditEventConfirmationDialog extends StatefulWidget {
   final Event? e;
+  final String? eventType;
   final List<EventType> eventTypes;
   final Function(Event e)? onConfirmed;
 
-  const AddEditEventConfirmationDialog({super.key, this.e, required this.eventTypes, this.onConfirmed});
+  const AddEditEventConfirmationDialog({super.key, this.e, this.eventType, required this.eventTypes, this.onConfirmed});
 
   @override
   State<StatefulWidget> createState() => _AddEditEventConfirmationDialogState();
@@ -36,7 +37,7 @@ class _AddEditEventConfirmationDialogState extends State<AddEditEventConfirmatio
   @override
   void initState() {
     super.initState();
-    typeId = widget.e?.typeId;
+    typeId = widget.e?.typeId ?? widget.eventType;
     dateTime = widget.e?.dateTime ?? DateTime.now();
     noteController.text = widget.e?.note ?? "";
   }
