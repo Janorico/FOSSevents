@@ -1,5 +1,5 @@
 #define MyAppName "FOSSevents"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppStatus "stable"
 #define MyAppPublisher "Janorico"
 #define MyAppVerName MyAppName + " v" + MyAppVersion + "-" + MyAppStatus
