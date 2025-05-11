@@ -51,31 +51,33 @@ class ChartPage extends StatelessWidget {
       appBar: AppBar(title: Text("${type.name}, ${type.frequency.name}, (${type.desc})")),
       body: Padding(
         padding: EdgeInsetsGeometry.fromLTRB(10.0, 0.0, 10.0, 10.0),
-        child: Column(
-          children: [
-            type.frequency == EventFrequency.yearly
-                ? AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: CandlestickChart(
-                    CandlestickChartData(
-                      candlestickSpots: spots,
-                      minY: 1,
-                      maxY: 12,
-                      titlesData: FlTitlesData(
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            getTitlesWidget: (value, meta) => Text(DateFormat.MMM().format(DateTime(0, value.toInt()))),
-                            reservedSize: 35,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              type.frequency == EventFrequency.yearly
+                  ? AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: CandlestickChart(
+                      CandlestickChartData(
+                        candlestickSpots: spots,
+                        minY: 1,
+                        maxY: 12,
+                        titlesData: FlTitlesData(
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) => Text(DateFormat.MMM().format(DateTime(0, value.toInt()))),
+                              reservedSize: 35,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                )
-                : Text("Non-yearly frequencies aren't supported yet."),
-            for (Event e in events) ListTile(title: Text(e.dateTimeRange.toReadableString()), subtitle: Text(e.note.isEmpty ? "(No note)" : e.note)),
-          ],
+                  )
+                  : Text("Non-yearly frequencies aren't supported yet."),
+              for (Event e in events) ListTile(title: Text(e.dateTimeRange.toReadableString()), subtitle: Text(e.note.isEmpty ? "(No note)" : e.note)),
+            ],
+          ),
         ),
       ),
     );
