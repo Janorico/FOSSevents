@@ -26,6 +26,10 @@ class Dialogs {
     showAlertDialog(context: context, icon: Icon(Icons.warning, size: 64.0), title: Text("No selection!"));
   }
 
+  static void showInvalidSelectionDialog(BuildContext context) {
+    showAlertDialog(context: context, icon: Icon(Icons.warning, size: 64.0), title: Text("Invalid selection!"));
+  }
+
   static void showAlertDialog({required BuildContext context, Widget? icon, Widget? title, Widget? content}) {
     showDialog(
       context: context,

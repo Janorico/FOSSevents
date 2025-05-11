@@ -24,6 +24,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fossevents/chart_page.dart';
 import 'package:fossevents/data/files.dart';
 import 'package:fossevents/data/types.dart';
 import 'package:fossevents/dialogs.dart';
@@ -152,6 +153,29 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             tooltip: "Edit selection.",
           ),
           IconButton(onPressed: () => deleteSelection(), icon: Icon(Icons.delete), tooltip: "Delete selection."),
+          IconButton(
+            onPressed: () {
+              EventClass? selection = selectedNode?.content.ec;
+              if (selection == null) {
+                Dialogs.showNoSelectionDialog(context);
+              } else {
+                String typeId = "";
+                if (selection is Event) {
+                  String? tmp = selection.typeId;
+                  if (tmp == null) {
+                    Dialogs.showInvalidSelectionDialog(context);
+                    return;
+                  }
+                  typeId = tmp;
+                } else if (selection is EventType) {
+                  typeId = selection.id;
+                }
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ChartPage(db: widget.db, typeId: typeId)));
+              }
+            },
+            icon: Icon(Icons.area_chart),
+            tooltip: "View chart of selection.",
+          ),
           PopupMenuButton(
             itemBuilder:
                 (context) => <PopupMenuEntry>[
